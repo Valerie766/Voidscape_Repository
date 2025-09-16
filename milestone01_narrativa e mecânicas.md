@@ -17,4 +17,4 @@ MECÂNCIA DE VIAGEM NO TEMPO: A mecânica de viagem no tempo consite em 3 elemen
 2°Número limitado de mortes e viagens para outras linhas temporáis: no menu, ao clicar no relógio que permite a viagem no tempo, aparece uma barra de entropia, ao clicar nela, você pode visualizar o quão perto o universo está 
 da entropia final, a entropia final é um dos finais do jogo, e ele fica cada vez mais próximo toda vez que o jogador morre ou viaja no tempo, criando uma experiência mais difícil e punitiva.
 3°Diversos finais: o jogo conquiste de, no momento, 5 finais, os quais são obtidos desde o início do jogo, ou em áreas secretas desbloqueáveis, e cada final é uma linah do tempo diferente.
-APRESENTAÇÃO: https://docs.google.com/presentation/d/1GXMi4448BrjAUGwaVh7f_Ezl9cX5aaxqfzK_OUPBgsk/edit?usp=sharing 
+
