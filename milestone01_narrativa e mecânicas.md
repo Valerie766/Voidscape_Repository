@@ -1,3 +1,4 @@
+MILESTONE 1-NARRATIVA E MECÂNICAS DE VIAGEM NO TEMPO VOIDSCAPE
 SINOPSE DO JOGO: QUANTAS VEZES VOCÊ PODE MORRER?-Você está à deriva no abismo eterno. Sua única companhia é uma mansão misteriosa e um relógio vintage. A única coisa que você sabe é que sua memória se foi. Com um simples tique-taque, o relógio te transporta no tempo, revelando segredos e caminhos para a fuga.
  
 Aprenda a dominar o poder do tempo, resolvendo puzzles complexos que desafiam a própria realidade. Manipule engrenagens, desvende os segredos de um labirinto temporal e evite as criaturas que rastejam pelas sombras da mansão.
