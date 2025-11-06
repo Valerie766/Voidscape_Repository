@@ -1,19 +1,3 @@
-%YAML 1.1
-%TAG !u! tag:unity3d.com,2011:
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d055533bde2b74548836014120dd7d00, type: 3}
-  m_Name: Nota 2
-  m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  itemName: Nota 2
-  description: "Uma folha velha e suja de sangue, ela diz: \"N\xE3o posso deixar
-    que ele me encontre, caso voc\xEA esetja lendo isso, preciso que voc\xEA lembre
-    de algo que s\xF3 eu lembraria, a data de morte do doutor Hawking\"."
-  icon: {fileID: 3058745686700435456, guid: 8a3533bd8d7b1db439ef1c02a53a515a, type: 3}
+version https://git-lfs.github.com/spec/v1
+oid sha256:ca79d865a2787608d16248a8c3bcdefbb8e220edf9f47219bbe3e57baaf521c3
+size 765

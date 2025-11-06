@@ -1,34 +1,3 @@
-%YAML 1.1
-%TAG !u! tag:unity3d.com,2011:
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9d4841b9770ba0e41865e019f791d82a, type: 3}
-  m_Name: Zombie
-  m_EditorClassIdentifier: Assembly-CSharp::EnemyData
-  enemyID: Zombie
-  enemyName: Variante corrompida
-  visualSprite: {fileID: 6314162068655000594, guid: bf8d10648b5aa844fae017358f4f14c7, type: 3}
-  maxHP: 10
-  attackValue: 10
-  initialDialogue: Um ser espreita pelas sombras.
-  talkOptions:
-  - Tentar Fugir
-  - "Dizer que voc\xEAs se parecem"
-  - Perguntar quem fez isso com ela
-  enemyReactions:
-  - "\"O ser avan\xE7a e te arranha!\""
-  - "Ela para e tamb\xE9m te observa"
-  - '"Leon...Entropia..."'
-  triggersAttackIndices: 0100000002000000
-  defeatSequence: 0100000002000000
-  pacifistVictoryDialogue: A figura desaparece nas sombras...
-  attackVictoryDialogue: A figura se desfaz em agonia
-  attackPattern:
-  - 
+version https://git-lfs.github.com/spec/v1
+oid sha256:701ad089ed66b9f26363c903d643522e2f94f9a9cacd71d0f751e59cba8d6b82
+size 1089

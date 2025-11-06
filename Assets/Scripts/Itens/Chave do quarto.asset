@@ -1,18 +1,3 @@
-%YAML 1.1
-%TAG !u! tag:unity3d.com,2011:
---- !u!114 &11400000
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d055533bde2b74548836014120dd7d00, type: 3}
-  m_Name: Chave do quarto
-  m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  itemName: Chave do Quarto
-  description: "Uma chave de metal leve, tem uma nota presa na ponta escrita: \"chave
-    para o quarto onde eu tranquei o p\xE1ssaro\""
-  icon: {fileID: 4617620551454551896, guid: 0e923190913a3bc469046a1dafae243c, type: 3}
+version https://git-lfs.github.com/spec/v1
+oid sha256:0d3e9f12e8abe34e9688807584e1d75d20a762ccc79d76860883ff0c31feb282
+size 681
