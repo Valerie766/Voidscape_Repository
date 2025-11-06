@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d055533bde2b74548836014120dd7d00, type: 3}
+  m_Name: Nota 1-Viajem no tempo
+  m_EditorClassIdentifier: Assembly-CSharp::Item
+  itemName: "Para o caso de voc\xEA estar confusa"
+  description: "Um folha arrancada de um caderno, tem partes faltando e um pouco
+    de sangue na borda. A \xFAnica coisa legivel \xE9 \xB4\xB4aperte o bot\xE3o T
+    do lado do rel\xF3gio``"
+  icon: {fileID: 3058745686700435456, guid: 8a3533bd8d7b1db439ef1c02a53a515a, type: 3}

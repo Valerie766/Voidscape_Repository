@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d055533bde2b74548836014120dd7d00, type: 3}
+  m_Name: Pen Drive
+  m_EditorClassIdentifier: Assembly-CSharp::ItemData
+  itemName: 
+  description: "Um pen drive velho e  com o pl\xE1stico desgastado"
+  icon: {fileID: -5104526033866522987, guid: 1d58642b10003bf49a79d7c6fe0f8955, type: 3}
