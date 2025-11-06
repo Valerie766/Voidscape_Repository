@@ -1,57 +1,24 @@
-# ==============================================================================
-# IGNORE PASTAS E ARQUIVOS GERADOS AUTOMATICAMENTE PELA UNITY
-# ==============================================================================
-
-# Pastas Principais para Ignorar (CRUCIAIS!)
-/Library/
-/Temp/
-/Obj/
-/Build/
-/Builds/
-/UserSettings/
-
-# Pacotes (Gerados na pasta Library, mas bom ignorar explicitamente)
-/PackageCache/
-/Packages/
-
-# Logs e Dados de Debug
-/Logs/
-
-# Arquivos de Solução e Projeto do IDE (Visual Studio, Rider, etc.)
-# Ignorar arquivos de soluções e projetos, exceto os necessários para o Unity
+# Unity
+[Ll]ibrary/
+[Tt]emp/
+[Oo]bj/
+[Bb]uild/
+[Bb]uilds/
+[Ll]ogs/
+[Mm]emoryCaptures/
+UserSettings/
+# Visual Studio
+.vs/
 *.csproj
 *.unityproj
 *.sln
 *.suo
+*.tmp
 *.user
 *.userprefs
-*.DS_Store
-*.pdb
-*.pid
-
-# ==============================================================================
-# IGNORAR ARQUIVOS DA CRIAÇÃO DE BUILD (COMPILAÇÃO)
-# ==============================================================================
-
-# Executáveis
-*.exe
-*.dll
-*.so
-*.a
-*.dylib
-*.log
-
-# Arquivos de Build/Export
-*.apk
-*.unitypackage
-*.xcode/
-
-# ==============================================================================
-# IGNORAR ARQUIVOS DE TESTE/REVISÃO
-# ==============================================================================
-# Opcional: Se você usa o Git LFS para arquivos grandes, 
-# estes podem ser ignorados se não forem para o LFS
-# [SEU PROJETO DEVE USAR LFS PARA ESTES ARQUIVOS, NÃO OS IGNORE SE FOREM SEUS ASSETS!]
-# *.bak
-# *.blend
-# *.meta
+*.pidb
+*.booproj
+*.svd
+# Outros
+.DS_Store
+Thumbs.db
