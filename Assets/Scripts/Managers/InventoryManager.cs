@@ -1,33 +1,52 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
-using TMPro; // <-- Importante! Necessário para TextMeshProUGUI
+using TMPro;
 
 public class InventoryManager : MonoBehaviour
 {
+    // === Singleton Instance ===
+    public static InventoryManager Instance { get; private set; }
+    
     [Header("UI do Inventário")]
-    public GameObject menuInventario;        // Painel principal do inventário
-    public Image[] slotIcons;                // Ícones dos slots do inventário
-    public Image itemPreviewImage;           // Imagem grande do item selecionado
-    public TextMeshProUGUI itemDescriptionText; // Descrição (TextMeshProUGUI)
+    public GameObject menuInventario;
+    public Image[] slotIcons;
+    public Image itemPreviewImage;
+    public TextMeshProUGUI itemDescriptionText;
 
     [Header("Configurações de Tecla")]
-    public KeyCode inventoryKey = KeyCode.E; // Tecla para abrir/fechar inventário
+    public KeyCode inventoryKey = KeyCode.E;
 
     private List<ItemData> itens = new List<ItemData>();
     private bool inventarioAtivo = false;
+
+    void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            // Garante a persistência se o objeto for carregado entre cenas
+            // DontDestroyOnLoad(gameObject); 
+        }
+        else if (Instance != this)
+        {
+            Destroy(gameObject);
+        }
+    }
 
     void Start()
     {
         if (menuInventario != null)
             menuInventario.SetActive(false);
 
-        AtualizarUI();
+        AtualizarUI(); 
+        
+        // NOVO: Limpa o painel de preview ao iniciar (caso tenha sobrado lixo de memória)
+        ClearPreviewPanel();
     }
 
     void Update()
     {
-        // Alterna o inventário com a tecla configurada (E)
         if (Input.GetKeyDown(inventoryKey))
         {
             inventarioAtivo = !inventarioAtivo;
@@ -36,7 +55,39 @@ public class InventoryManager : MonoBehaviour
         }
     }
 
-    // Adiciona um novo item ao inventário
+    // =======================================================
+    // MÉTODO DE LIMPEZA DO INVENTÁRIO (PARA HARD RESET)
+    // =======================================================
+    public void ClearInventoryData()
+    {
+        itens.Clear();
+        
+        // 🚨 CORREÇÃO PRINCIPAL: Limpar o painel de preview imediatamente
+        ClearPreviewPanel();
+        
+        AtualizarUI();
+        UnityEngine.Debug.Log("[INVENTORY] Inventário e UI de preview limpos.");
+    }
+
+    // Método auxiliar para limpar o painel de descrição e preview
+    private void ClearPreviewPanel()
+    {
+        if (itemPreviewImage != null)
+        {
+            itemPreviewImage.sprite = null;
+            // Torna o ícone transparente para limpar visualmente o painel
+            itemPreviewImage.color = new Color(1f, 1f, 1f, 0f); 
+        }
+        if (itemDescriptionText != null)
+        {
+            itemDescriptionText.text = ""; // Limpa o texto
+        }
+    }
+
+    // =======================================================
+    // MÉTODOS DE AÇÃO (Adicionar/Verificar/Remover)
+    // =======================================================
+
     public void AdicionarItem(ItemData novoItem)
     {
         if (itens.Count < slotIcons.Length)
@@ -49,66 +100,47 @@ public class InventoryManager : MonoBehaviour
             Debug.Log("Inventário cheio!");
         }
     }
-    // ---------- Adicione no seu InventoryManager.cs ----------
 
-/// <summary>
-/// Verifica se o inventário contém um item com o mesmo nome.
-/// Útil se você só tiver o nome da chave em LockedDoor.requiredItemName.
-/// </summary>
-public bool HasItem(string itemName)
-{
-    if (string.IsNullOrEmpty(itemName)) return false;
-
-    // Se o seu inventário usa ItemData (ScriptableObject), adapte o campo conforme o nome real.
-    foreach (var it in itens) // 'itens' é a lista interna de ItemData no InventoryManager
+    public bool HasItem(ItemData itemData)
     {
-        if (it != null && it.itemName == itemName)
-            return true;
+        if (itemData == null) return false;
+        return itens.Contains(itemData);
     }
-    return false;
-}
-
-/// <summary>
-/// Verifica se o inventário contém exatamente a referência ao ItemData passado.
-/// </summary>
-public bool HasItem(ItemData itemData)
-{
-    if (itemData == null) return false;
-    return itens.Contains(itemData);
-}
-
-/// <summary>
-/// Remove a primeira ocorrência de um item com o mesmo nome.
-/// Retorna true se removeu com sucesso.
-/// </summary>
-public bool RemoveItem(string itemName)
-{
-    if (string.IsNullOrEmpty(itemName)) return false;
-
-    for (int i = 0; i < itens.Count; i++)
+    
+    public bool HasItem(string itemName)
     {
-        if (itens[i] != null && itens[i].itemName == itemName)
+        if (string.IsNullOrEmpty(itemName)) return false;
+        foreach (var it in itens)
         {
-            itens.RemoveAt(i);
-            AtualizarUI(); // atualiza a UI para refletir a remoção
-            return true;
+            if (it != null && it.itemName == itemName) 
+                return true;
         }
+        return false;
     }
-    return false;
-}
 
-/// <summary>
-/// Remove a primeira ocorrência da referência ItemData.
-/// Retorna true se removeu com sucesso.
-/// </summary>
-public bool RemoveItem(ItemData itemData)
-{
-    if (itemData == null) return false;
-    bool removed = itens.Remove(itemData);
-    if (removed) AtualizarUI();
-    return removed;
-}
+    public bool RemoveItem(ItemData itemData)
+    {
+        if (itemData == null) return false;
+        bool removed = itens.Remove(itemData);
+        if (removed) AtualizarUI();
+        return removed;
+    }
 
+    public bool RemoveItem(string itemName)
+    {
+        if (string.IsNullOrEmpty(itemName)) return false;
+
+        for (int i = 0; i < itens.Count; i++)
+        {
+            if (itens[i] != null && itens[i].itemName == itemName)
+            {
+                itens.RemoveAt(i);
+                AtualizarUI();
+                return true;
+            }
+        }
+        return false;
+    }
 
     // Atualiza a UI dos slots
     private void AtualizarUI()
@@ -116,7 +148,7 @@ public bool RemoveItem(ItemData itemData)
         for (int i = 0; i < slotIcons.Length; i++)
         {
             Image icon = slotIcons[i];
-            Button btn = icon.GetComponent<Button>(); // botão no mesmo objeto do ícone
+            Button btn = icon.GetComponent<Button>();
 
             if (i < itens.Count && itens[i] != null)
             {
@@ -152,7 +184,7 @@ public bool RemoveItem(ItemData itemData)
 
         if (itemDescriptionText != null)
         {
-            itemDescriptionText.text = item.description; // <-- Exibe o texto do item
+            itemDescriptionText.text = item.description;
         }
     }
 }

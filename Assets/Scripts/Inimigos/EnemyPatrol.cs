@@ -48,21 +48,26 @@ public class EnemyPatrol : MonoBehaviour
         // Tenta encontrar o player persistente
         if (PlayerMovement.Instance != null)
         {
-             player = PlayerMovement.Instance.transform;
+            player = PlayerMovement.Instance.transform;
         }
         else
         {
-             GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
-             if (playerObj != null)
-             {
-                 player = playerObj.transform;
-             }
+            GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
+            if (playerObj != null)
+            {
+                player = playerObj.transform;
+            }
         }
 
         hiddenLayer = LayerMask.NameToLayer("Hidden");
         
         audioSource = GetComponent<AudioSource>();
-        if (audioSource != null && chaseAlertSound != null)
+        if (audioSource == null) 
+        {
+            audioSource = gameObject.AddComponent<AudioSource>();
+        }
+
+        if (chaseAlertSound != null)
         {
             audioSource.clip = chaseAlertSound;
             audioSource.loop = true;
@@ -158,48 +163,9 @@ public class EnemyPatrol : MonoBehaviour
     }
     
     // ======================================================
-    // MÓDULO DE MORTE/CUTSCENE (CORRIGIDO)
-    // ======================================================
-    void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.CompareTag("Player"))
-        {
-            // Tenta obter a referência do Player Persistente
-            GameObject playerToKill = PlayerMovement.Instance != null ? PlayerMovement.Instance.gameObject : other.gameObject;
-            HandlePlayerDeath(playerToKill);
-        }
-    }
-
-    void HandlePlayerDeath(GameObject player)
-    {
-        // 1. Garante que o inimigo pare e pare de patrulhar
-        if (rb != null) rb.linearVelocity = Vector2.zero;	
-        this.enabled = false; // Desabilita o Update do inimigo
-        
-        // 2. Chama o GameManager para COORDENAR A MORTE e o Respawn.
-        if (GameManager.Instance != null)
-        {
-            // Se houver um CutsceneManager, ele será a primeira camada.
-            if (FindObjectOfType<CutsceneManager>() is CutsceneManager cm)
-            {
-                 // Assumindo que o CutsceneManager chama GameManager.StartDeathSequence(player) ao final.
-                 cm.StartDeathCutscene(player); 
-            }
-            else
-            {
-                 // Fallback: Chama a sequência de morte diretamente
-                 GameManager.Instance.StartDeathSequence(player);
-            }
-        }
-        else
-        {
-             Debug.LogError("ERRO FATAL: GameManager não encontrado. Player não pode respawnar.");
-        }
-    }
-    
-    // ======================================================
     // MÓDULO DE RESET PÓS-RESPAWN
     // ======================================================
+    // Este método é chamado pelo GameManager após um Respawn.
     public void ResetEnemy()
     {
         // Reativa o componente para que o Update volte a funcionar
@@ -211,11 +177,11 @@ public class EnemyPatrol : MonoBehaviour
         
         if (patrolPoints.Length > 1)
         {
-             currentPoint = 1;
+            currentPoint = 1;
         }
         else
         {
-             currentPoint = 0;
+            currentPoint = 0;
         }
         
         if (audioSource != null && audioSource.isPlaying)

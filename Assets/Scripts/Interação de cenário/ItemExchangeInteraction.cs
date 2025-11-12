@@ -1,5 +1,4 @@
 using UnityEngine;
-
 // Requer um Collider2D no objeto para detectar a proximidade
 [RequireComponent(typeof(Collider2D))] 
 public class ItemExchangeInteraction : MonoBehaviour
@@ -32,7 +31,6 @@ public class ItemExchangeInteraction : MonoBehaviour
 
     void Update()
     {
-        // Se o player está perto, o puzzle não foi completado, e o input foi detectado.
         if (playerIsClose && !puzzleCompleted && Input.GetKeyDown(interactionKey))
         {
             Debug.Log($"[INPUT DETECTADO]: Tecla {interactionKey} OK. Verificando requisitos...");
@@ -46,7 +44,6 @@ public class ItemExchangeInteraction : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        // Log de Colisão para diagnóstico (Verifica se algum objeto está entrando)
         Debug.Log($"[COLISÃO CHECK]: Objeto {other.gameObject.name} (Tag: {other.tag}) ENTROU.");
 
         if (other.CompareTag("Player"))
@@ -71,11 +68,13 @@ public class ItemExchangeInteraction : MonoBehaviour
 
     private void TryInteraction()
     {
-        InventoryManager inventory = FindObjectOfType<InventoryManager>();
+        // 🚨 CORREÇÃO: Usar a referência estática (Singleton) em vez de FindObjectOfType
+        InventoryManager inventory = InventoryManager.Instance;
         
         if (inventory == null)
         {
-            Debug.LogError("InventoryManager não encontrado na cena.");
+            // O InventoryManager persiste, então essa mensagem agora indica que ele não foi inicializado corretamente
+            Debug.LogError("InventoryManager não encontrado na cena. Verifique se ele inicializou o Singleton (Awake()).");
             return;
         }
 
@@ -87,7 +86,9 @@ public class ItemExchangeInteraction : MonoBehaviour
         // Caso 2: Jogador não tem o item (Apenas loga)
         else
         {
-            Debug.Log($"Interação Falha: Item '{requiredItem.itemName}' ausente. Jogador não possui o item necessário.");
+            // Nota: Adicione uma verificação de Nulo para requiredItem aqui
+            string requiredName = requiredItem != null ? requiredItem.itemName : "ITEM REQUERIDO (NULL)";
+            Debug.Log($"Interação Falha: Item '{requiredName}' ausente. Jogador não possui o item necessário.");
         }
     }
 
@@ -103,8 +104,5 @@ public class ItemExchangeInteraction : MonoBehaviour
         // 2. Marca como completo e desativa o script para prevenir interações futuras
         puzzleCompleted = true;
         this.enabled = false; 
-        
-        // Opcional: Se o objeto deve sumir após a interação, descomente a linha abaixo:
-        // Destroy(gameObject);
     }
 }

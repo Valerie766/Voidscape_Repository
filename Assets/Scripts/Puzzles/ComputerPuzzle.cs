@@ -7,14 +7,13 @@ public class ComputerPuzzle : MonoBehaviour
 {
     public static ComputerPuzzle Instance;
 
-    // --- VARIÁVEIS DE CACHE DE UI DO PC ATUAL ---
-    // Estas variáveis armazenam as referências que o ComputerInteract ativo nos passa.
-    private GameObject currentRoot;
-    private GameObject currentFileListPanel;
-    private GameObject currentNoteDisplayPanel;
-    
-    // 💡 CORRIGIDO: Esta variável DEVE ser do tipo TextMeshProUGUI
-    private TextMeshProUGUI currentNoteText; 
+    // 💡 REFERÊNCIAS ESTÁTICAS DE UI: Devem ser preenchidas no Inspector deste script.
+    [Header("Componentes UI (Fixos)")]
+    [Tooltip("O GameObject Root/Canvas que contém toda a UI do computador.")]
+    public GameObject computerRoot;
+    public GameObject fileListPanel;
+    public GameObject noteDisplayPanel;
+    public TextMeshProUGUI noteTextDisplay; 
     // ---------------------------------------------
     
     [Header("Arquivos e Dicas")]
@@ -32,7 +31,8 @@ public class ComputerPuzzle : MonoBehaviour
 
     private bool puzzleActive = false;
     public bool IsActive => puzzleActive;
-    private ComputerInteract currentContainer;
+    // O container ainda é necessário para saber qual PC dar item
+    private ComputerInteract currentContainer; 
 
     void Awake()
     {
@@ -69,32 +69,26 @@ public class ComputerPuzzle : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.W))
         {
             // 1. Se a nota está aberta, fecha a nota
-            if (currentNoteDisplayPanel != null && currentNoteDisplayPanel.activeSelf)
+            if (noteDisplayPanel != null && noteDisplayPanel.activeSelf)
             {
                 CloseNote(); 
             }
             // 2. Se a lista de arquivos está aberta (e não a nota), fecha o puzzle inteiro
-            else if (currentFileListPanel != null && currentFileListPanel.activeSelf) 
+            else if (fileListPanel != null && fileListPanel.activeSelf) 
             {
                 ClosePuzzle(); 
             }
         }
     }
 
-    // --- MÉTODO STARTPUZZLE ATUALIZADO ---
-    // Assinatura correta: O último parâmetro é TextMeshProUGUI
-    public void StartPuzzle(ComputerInteract container, GameObject root, GameObject fileList, GameObject noteDisplay, TextMeshProUGUI noteText)
+    // --- MÉTODO STARTPUZZLE ORIGINAL ---
+    // Apenas recebe a referência do PC que iniciou a interação
+    public void StartPuzzle(ComputerInteract container)
     {
         if (puzzleActive) return;
         
         currentContainer = container; 
         
-        // Armazena as referências do PC que chamou
-        currentRoot = root;
-        currentFileListPanel = fileList;
-        currentNoteDisplayPanel = noteDisplay;
-        currentNoteText = noteText; // Armazenando a referência do componente TMPro
-
         if (PlayerMovement.Instance != null)
         {
             PlayerMovement.Instance.enabled = false;
@@ -102,20 +96,20 @@ public class ComputerPuzzle : MonoBehaviour
 
         puzzleActive = true;
         
-        // Ativa a UI usando as referências cacheada
-        currentRoot.SetActive(true);
-        currentFileListPanel.SetActive(true); 
-        currentNoteDisplayPanel.SetActive(false); 
+        // 💡 ATIVA A UI USANDO OS CAMPOS ESTÁTICOS DESTE PRÓPRIO SCRIPT
+        if (computerRoot != null) computerRoot.SetActive(true);
+        if (fileListPanel != null) fileListPanel.SetActive(true); 
+        if (noteDisplayPanel != null) noteDisplayPanel.SetActive(false); 
     }
     
     public void ClosePuzzle()
     {
         puzzleActive = false;
         
-        // Usa a referência cacheada para desativar
-        if (currentRoot != null)
+        // 💡 DESATIVA A UI USANDO OS CAMPOS ESTÁTICOS
+        if (computerRoot != null)
         {
-            currentRoot.SetActive(false);
+            computerRoot.SetActive(false);
         }
         
         currentContainer = null;
@@ -124,10 +118,6 @@ public class ComputerPuzzle : MonoBehaviour
         {
             PlayerMovement.Instance.enabled = true;
         }
-        
-        // Limpa as referências cache para evitar erros com o próximo PC
-        currentRoot = currentFileListPanel = currentNoteDisplayPanel = null;
-        currentNoteText = null;
     }
 
     public void FileClicked(int fileIndex)
@@ -136,20 +126,20 @@ public class ComputerPuzzle : MonoBehaviour
 
         FileData data = fileDataList[fileIndex];
         
-        // 1. Exibe o conteúdo da dica (usando a referência cacheada do componente TMPro)
-        if (currentNoteText != null) 
+        // 1. Exibe o conteúdo da dica (usando a referência estática do componente TMPro)
+        if (noteTextDisplay != null) 
         {
-            currentNoteText.text = data.fileContent;
+            noteTextDisplay.text = data.fileContent;
         }
         
         // 2. Transiciona a UI
-        if (currentFileListPanel != null)
+        if (fileListPanel != null)
         {
-            currentFileListPanel.SetActive(false); 
+            fileListPanel.SetActive(false); 
         }
-        if (currentNoteDisplayPanel != null)
+        if (noteDisplayPanel != null)
         {
-            currentNoteDisplayPanel.SetActive(true); 
+            noteDisplayPanel.SetActive(true); 
         }
 
         // 3. Verifica se este arquivo concede o item
@@ -161,13 +151,13 @@ public class ComputerPuzzle : MonoBehaviour
     
     public void CloseNote()
     {
-        if (currentNoteDisplayPanel != null)
+        if (noteDisplayPanel != null)
         {
-            currentNoteDisplayPanel.SetActive(false);
+            noteDisplayPanel.SetActive(false);
         }
-        if (currentFileListPanel != null)
+        if (fileListPanel != null)
         {
-            currentFileListPanel.SetActive(true); 
+            fileListPanel.SetActive(true); 
         }
     }
 

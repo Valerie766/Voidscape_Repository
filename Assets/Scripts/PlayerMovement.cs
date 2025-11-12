@@ -52,6 +52,7 @@ public class PlayerMovement : MonoBehaviour
         // 1. Inicialização de Componentes
         rb = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
+        // O áudio do step deve estar no Player.
         audioSource = GetComponent<AudioSource>();
 
         // 2. Configuração Inicial de Áudio
@@ -81,37 +82,41 @@ public class PlayerMovement : MonoBehaviour
         // Gatilho da Viagem no Tempo
         if (Input.GetKeyDown(KeyCode.T))
         {
-             if (audioSource != null && timeTravelSound != null)
-             {
-                 audioSource.PlayOneShot(timeTravelSound); 
-             }
-             
-             if (FindObjectOfType<TimeTravelManager>() is TimeTravelManager ttm)
-             {
-                 FindObjectOfType<PlayerPositionManager>()?.SavePosition(transform.position); 
-                 ttm.TravelThroughTime(); 
-             }
-             return;
+            // Toca o som de tentativa de viagem, mesmo que a viagem falhe
+            if (audioSource != null && timeTravelSound != null)
+            {
+                audioSource.PlayOneShot(timeTravelSound); 
+            }
+            
+            // 💡 CHAMADA ATUALIZADA: Pede ao Manager para decidir se a viagem pode ocorrer
+            if (FindObjectOfType<TimeTravelManager>() is TimeTravelManager ttm)
+            {
+                // Passa a posição ATUAL do Player para que o Manager possa salvar.
+                ttm.TryTravelThroughTime(transform.position); 
+            }
+            return;
         }
 
         // Lógica de Estamina
         if (isRunning && isMoving)
         {
-             currentStamina -= staminaDrainRate * Time.deltaTime;
-             if (currentStamina < 0) currentStamina = 0;
-             if (currentStamina == 0) isRunning = false;
+            currentStamina -= staminaDrainRate * Time.deltaTime;
+            if (currentStamina < 0) currentStamina = 0;
+            if (currentStamina == 0) isRunning = false;
         }
         else
         {
-             currentStamina += staminaRegenRate * Time.deltaTime;
-             if (currentStamina > maxStamina) currentStamina = maxStamina;
+            currentStamina += staminaRegenRate * Time.deltaTime;
+            if (currentStamina > maxStamina) currentStamina = maxStamina;
         }
 
         // Lógica de UI e Áudio
         if (staminaFill != null) staminaFill.fillAmount = currentStamina / maxStamina;
         if (staminaCanvasGroup != null) staminaCanvasGroup.alpha = (currentStamina < maxStamina) ? 1f : 0f;
-        if (isMoving && !audioSource.isPlaying) audioSource.Play();
-        else if (!isMoving && audioSource.isPlaying) audioSource.Stop();
+        
+        // Áudio de passo (walkStepSound)
+        if (isMoving && !audioSource.isPlaying && audioSource.clip == walkStepSound) audioSource.Play();
+        else if (!isMoving && audioSource.isPlaying && audioSource.clip == walkStepSound) audioSource.Stop();
 
         // Lógica de Animação e Flip
         if (moveInput == 0) anim.Play("Idle");
@@ -129,18 +134,15 @@ public class PlayerMovement : MonoBehaviour
         rb.linearVelocity = new Vector2(moveInput * speed, rb.linearVelocity.y);
     }
     
-    /// <summary>
-    /// Método a ser chamado por qualquer script (dano, inimigo) para MORTE.
-    /// </summary>
     public void HandleDeath()
     {
-         if (GameManager.Instance != null)
-         {
-             GameManager.Instance.StartDeathSequence(gameObject);
-         }
-         else
-         {
-             Debug.LogError("PM: GameManager não encontrado para lidar com a morte!");
-         }
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.StartDeathSequence(gameObject);
+        }
+        else
+        {
+            Debug.LogError("PM: GameManager não encontrado para lidar com a morte!");
+        }
     }
 }

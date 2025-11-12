@@ -1,50 +1,47 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class TimeTravel : MonoBehaviour
+public class TimeTraveler : MonoBehaviour
 {
-    public string presentScene = "CidadePresente";
-    public string pastScene = "CidadePassado";
+    [Header("Configuração de Viagem no Tempo")]
+    [Tooltip("A tecla que ativa a viagem no tempo.")]
+    public KeyCode timeTravelKey = KeyCode.T;
+    
+    [Tooltip("O nome da cena para onde o jogador viaja no tempo.")]
+    public string targetSceneName = "FutureScene";
 
-    private string currentScene;
-
-    void Start()
-    {
-        currentScene = SceneManager.GetActiveScene().name;
-        SceneManager.sceneLoaded += OnSceneLoaded;
-    }
+    [Header("Restrição de Área")]
+    [Tooltip("Define se a viagem no tempo está bloqueada por uma TimeRestrictionArea.")]
+    public bool isTimeTravelRestricted = false;
 
     void Update()
     {
-        if (Input.GetKeyDown(KeyCode.T))
+        // Se a tecla de viagem for pressionada...
+        if (Input.GetKeyDown(timeTravelKey))
         {
-            // Salva posição antes de viajar
-            PlayerPositionManager.lastPosition = transform.position;
-            PlayerPositionManager.hasSavedPosition = true;
-
-            // Alterna cena
-            if (currentScene == presentScene)
+            // ...e NÃO estiver restrito, execute a viagem.
+            if (!isTimeTravelRestricted)
             {
-                SceneManager.LoadScene(pastScene);
+                TravelToNewTime();
             }
-            else if (currentScene == pastScene)
+            else
             {
-                SceneManager.LoadScene(presentScene);
+                Debug.LogWarning("Viagem no Tempo Bloqueada: O jogador está em uma área de restrição!");
+                // Opcional: Adicionar feedback visual ou sonoro de falha aqui.
             }
         }
     }
 
-    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    private void TravelToNewTime()
     {
-        currentScene = scene.name;
-
-        // Reposiciona se existir posição salva
-        if (PlayerPositionManager.hasSavedPosition)
+        // Verificação básica para evitar erros
+        if (string.IsNullOrEmpty(targetSceneName))
         {
-            transform.position = PlayerPositionManager.lastPosition;
+            Debug.LogError("TimeTraveler: O nome da cena alvo está vazio. Não é possível viajar.");
+            return;
         }
+
+        Debug.Log($"Viajando no tempo para a cena: {targetSceneName}");
+        SceneManager.LoadScene(targetSceneName);
     }
 }
-
-
-   

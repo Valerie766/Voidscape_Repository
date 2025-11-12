@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro; // Usando TMPro no topo para evitar erro de referência
 
 public class InventorySlot : MonoBehaviour
 {
@@ -40,9 +41,15 @@ public class InventorySlot : MonoBehaviour
 
     void OnClick()
     {
-        // Verifica se há InventoryManager na cena
-        InventoryManager inv = FindObjectOfType<InventoryManager>();
-        if (inv == null) return;
+        // 🚨 CORREÇÃO: Usar a referência estática (Singleton) em vez de FindObjectOfType
+        InventoryManager inv = InventoryManager.Instance;
+        
+        // Verifica se o InventoryManager está inicializado (Instance não é nulo)
+        if (inv == null) 
+        {
+            Debug.LogError("InventoryManager não está acessível. O slot não pode interagir.");
+            return;
+        }
 
         // Se não houver item vinculado, não faz nada
         if (itemData == null) return;

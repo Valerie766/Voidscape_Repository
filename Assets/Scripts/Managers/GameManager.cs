@@ -1,18 +1,16 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using System.Collections; 
+using System.Collections;
 
 public class GameManager : MonoBehaviour
 {
     public static GameManager Instance;
     
-    [Header("Respawn Settings")]
-    public Vector2 startPosition = Vector2.zero;
-    public int gameSceneIndex = 1; 
+    // REMOVIDOS: startPosition e gameSceneIndex. O RespawnPoint controlará o local.
     
     private TimeTravelManager timeTravelManager;
     private bool isHandlingDeath = false;
-    private int defaultPlayerLayer; // Usado para restaurar a Layer original
+    private int defaultPlayerLayer; 
 
     void Awake()
     {
@@ -30,86 +28,99 @@ public class GameManager : MonoBehaviour
         
         timeTravelManager = GetComponent<TimeTravelManager>();
         
-        if (PlayerMovement.Instance != null)
+        // Garante que o TimeTravelManager esteja presente para a coordenação de cenas
+        if (timeTravelManager == null)
         {
-             // Assumimos que a Layer padrão é definida no Start do PlayerMovement, mas
-             // vamos armazenar a Layer padrão para uso no respawn.
-             defaultPlayerLayer = LayerMask.NameToLayer("Player"); // Assumindo Layer padrão "Player"
+            Debug.LogError("GameManager requer um TimeTravelManager no mesmo GameObject!");
         }
         
-        if (!PlayerPositionManager.hasSavedPosition)
+        // Tentativa de encontrar a Layer padrão do Player.
+        if (PlayerMovement.Instance != null)
         {
-            FindObjectOfType<PlayerPositionManager>()?.SavePosition(startPosition);
+             defaultPlayerLayer = PlayerMovement.Instance.gameObject.layer;
         }
     }
     
     void OnDestroy()
     {
-         SceneManager.sceneLoaded -= OnAnySceneLoaded;
+        SceneManager.sceneLoaded -= OnAnySceneLoaded;
     }
 
     private void OnAnySceneLoaded(Scene scene, LoadSceneMode mode)
     {
+        // 💡 CRÍTICO: Se o GameManager estiver manipulando a morte E o Player existe
         if (isHandlingDeath && PlayerMovement.Instance != null)
         {
+            // O RecoverPlayerAfterSceneLoad cuida do reposicionamento para o RespawnPoint
+            // e da reativação.
             StartCoroutine(RecoverPlayerAfterSceneLoad(PlayerMovement.Instance.gameObject));
         }
         
+        // O FinalizeRespawn original (sem isHandlingDeath) era para ajustes na Viagem no Tempo manual.
+        // Como o TimeTravelManager agora lida com o estado pós-Viagem no Tempo, este bloco é simplificado.
+        // Se a lógica aqui for importante para outros sistemas, mantenha. Caso contrário, pode ser removido.
+        /*
         if (!isHandlingDeath)
         {
              FinalizeRespawn(PlayerMovement.Instance?.gameObject);
         }
+        */
     }
     
     private IEnumerator RecoverPlayerAfterSceneLoad(GameObject player)
     {
-        yield return null; 
-
+        yield return null; // Aguarda 1 frame para a cena carregar completamente
+        
         if (player != null)
         {
             // 1. HARD ACTIVATE
             if (!player.activeSelf)
             {
                 player.SetActive(true);
-                Debug.Log("GM Coroutine: Player HARD ACTIVATED. Input agora deve funcionar.");
             }
             
-            // 2. REPOSITION AND RE-ENABLE CONTROL
-            if (PlayerPositionManager.hasSavedPosition)
+            // 2. REPOSICIONAMENTO PARA O RESPAWNPOINT
+            if (RespawnPoint.Instance != null)
             {
-                player.transform.position = PlayerPositionManager.lastPosition;
+                // 💡 NOVO: Usa a posição do RespawnPoint na cena recém-carregada
+                player.transform.position = RespawnPoint.Instance.GetSpawnPosition();
+                Debug.Log($"GM: Player respawnado em {RespawnPoint.Instance.GetSpawnPosition()} na {SceneManager.GetActiveScene().name}.");
+                
+                // Limpa o PlayerPositionManager para que o próximo 'T' salve a posição atual.
+                // Isso previne que o PlayerPositionManager.lastPosition seja a posição da morte
+                FindObjectOfType<PlayerPositionManager>()?.SavePosition(RespawnPoint.Instance.GetSpawnPosition());
+            }
+            else
+            {
+                // Se o ponto de respawn não for encontrado, ele pode cair no último ponto salvo
+                Debug.LogError("RespawnPoint não encontrado na cena! Usando última posição salva.");
             }
             
+            // 3. RESTAURAÇÃO DE ESTADO E CONTROLE
             if (player.GetComponent<PlayerMovement>() is PlayerMovement pm)
             {
                 pm.enabled = true; // Re-habilita o controle de input
             }
             
-            // 💡 CORREÇÃO CRÍTICA DO HIDEOUTCORRECTION
             Renderer playerRenderer = player.GetComponent<Renderer>();
             if (playerRenderer != null)
             {
-                 // Garante que o Player esteja visível
-                 playerRenderer.enabled = true; 
+                playerRenderer.enabled = true; // Garante visibilidade
             }
             
-            // Garante que o Player volte para a Layer Padrão (detectável)
-            player.layer = defaultPlayerLayer;
-            Debug.Log("GM Coroutine: Estado visual e Layer restaurados.");
-
-            // 3. SINCRONIZAÇÃO DA CÂMERA
+            player.layer = defaultPlayerLayer; // Garante que volte para a Layer Padrão
+            
+            // 4. SINCRONIZAÇÃO DA CÂMERA
             if (CameraController.Instance != null)
             {
                 Vector2 safeMin = new Vector2(-1000f, -1000f);
                 Vector2 safeMax = new Vector2(1000f, 1000f);
                 CameraController.Instance.HardResetAndSnap(player.transform, safeMin, safeMax);
-                Debug.Log("GM Coroutine: Câmera sincronizada.");
             }
         }
         
-        // 4. Finaliza o estado
-        isHandlingDeath = false;
-        Debug.Log("GM: Sequência de morte concluída. Player deve estar ativo e visível.");
+        // 5. Finaliza o estado
+        ResetDeathState();
     }
 
     public void StartDeathSequence(GameObject player)
@@ -117,55 +128,49 @@ public class GameManager : MonoBehaviour
         if (isHandlingDeath) return;
         isHandlingDeath = true;
         
-        // 1. DESABILITA O INPUT
+        // 1. DESABILITA O INPUT e SALVA LAYER PADRÃO
         if (player.GetComponent<PlayerMovement>() is PlayerMovement pm)
         {
             pm.enabled = false;
-            // Armazena a Layer padrão APENAS SE AINDA NÃO FOI FEITO
             if (defaultPlayerLayer == 0)
             {
                 defaultPlayerLayer = player.layer;
             }
-            
-            // 2. DESATIVAÇÃO DO OBJETO (USANDO SETACTIVE(FALSE) AGORA, NÃO O DEBUG TRACE)
-            // Assumindo que você removeu a função de debug temporária.
-            player.SetActive(false); 
+            player.SetActive(false); // Desativa o Player
         }
 
-        // 3. Inicia o processo de Respawn/Recarregamento de Cena
+        // 2. Inicia o processo de Respawn
         RespawnPlayer(player);
     }
 
+    // 💡 NOVO/AJUSTADO: Lógica central de respawn.
     public void RespawnPlayer(GameObject player)
     {
-        FindObjectOfType<PlayerPositionManager>()?.SavePosition(startPosition);
-        
-        if (SceneManager.GetActiveScene().buildIndex != gameSceneIndex)
+        if (timeTravelManager == null) 
         {
-             SceneManager.LoadScene(gameSceneIndex);
-             return;
+            Debug.LogError("TimeTravelManager é NULL. Não é possível respawnar.");
+            return;
+        }
+
+        // Se a cena atual NÃO for a cena inicial (Scene 1), força o carregamento dela.
+        if (SceneManager.GetActiveScene().name != timeTravelManager.initialSceneName)
+        {
+            timeTravelManager.LoadSceneExplicitly(timeTravelManager.initialSceneName);
+            // O resto da rotina será executado em OnAnySceneLoaded -> RecoverPlayerAfterSceneLoad
+            return;
         }
         
+        // Se já estiver na cena correta, apenas recupera o Player.
         StartCoroutine(RecoverPlayerAfterSceneLoad(player));
     }
-    
-    public void FinalizeRespawn(GameObject player)
-    {
-        if (player == null && PlayerMovement.Instance != null)
-        {
-             player = PlayerMovement.Instance.gameObject;
-        }
-        
-        if (player == null || isHandlingDeath) return; 
 
-        if (player.activeSelf && CameraController.Instance != null)
-        {
-             Vector2 safeMin = new Vector2(-1000f, -1000f);
-             Vector2 safeMax = new Vector2(1000f, 1000f);
-             CameraController.Instance.HardResetAndSnap(player.transform, safeMin, safeMax); 
-        }
+    public void ResetDeathState()
+    {
+        isHandlingDeath = false;
+        // O TimeTravelManager também pode precisar de um método de reset de estado aqui.
     }
     
+    // ... (Getters e Setters) ...
     public bool IsHandlingDeath() { return isHandlingDeath; }
     public TimeTravelManager GetTimeTravelManager() { return timeTravelManager; }
 }
