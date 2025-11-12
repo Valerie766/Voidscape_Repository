@@ -1,0 +1,37 @@
+early 2000s emo aesthetics / inspired by clock tower/the first fear, Cube Escape
+
+o jogo funciona com base em barra de stamina, correr/desviar gastam stamina. Quando o perseguidor alcançar a protagonista e ela ainda tiver stamina vai começar um qte (parecido com os de geradores de dbd), caso o contrario, ela morre automaticamente.
+
+Tirando a perseguição, o jogador mbém deve resolver puzzles, no qual inclue explorar, procurar itens e levar-los ao lugar certo.
+
+
+Mecânica de viagem no tempo: Usa um relógio para alternar entre presente e passado, o jogador deve achar itens no passado para usar no presente e vice versa;   
+
+CERTOS INTENS SÓ APRECEM EM ROTAS ESPECIFICAS.
+
+PUZZLE DE ACHAR SENHA COFRE (RESPOSTA DO PUZZLE DOS LIVRO? (RECEBE CHAVE DISPENSA) (suíte)
+
+PUZZLE DE DESCOBRIR SENHA DO COMPUTADOR (VIAGEM NO TEMPO (LEVA A FINAL ESPECIFICO?)) (escritório)
+ 
+PUZZLE DE BOTAR LIVROS NO LUGAR NA ORDEM CORRETA (LIVROS ESPELHADOS PELA CASA PELO TEMPO (SALA PRESENTE, SUITE PRESENTE, ESCRITORIO PASSADO, BIBLIOTECA PASSADO))
+
+PUZZLE DE PONTEIRO DE RELOGIO (PEGA TIJOLO NO JARDIM DO PRESENTE LEVA PRA BIBLIOTECA DO PASSADO, QUEBRA VIDRO DO RELOGIO PEGA OS PONTEIRO,S LEVA PRO RELOGIO DO PRESENTE E COLOCA NO HORARIO CORRETO)
+
+PUZZLE DE DESLIZAR PEÇINHA (RECEBA CHAVE ESCRITORIO)
+
+PUZZLE DE LUZ
+
+PUZZLE DE VIAGEM NO TEMPO
+
+
+
+
+Dr.a Eva Everestt
+Dr. Leon R. Winters
+
+
+lugares pra se esconder
+
+-armário (x2)
+-de baixo do sofá
+-na banheira (x2)
